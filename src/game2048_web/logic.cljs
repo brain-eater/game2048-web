@@ -118,3 +118,16 @@
                    (println " invalid move -" move))]
     (randomly-insert-2 board)
     board))
+
+(def transpose (partial apply map list))
+
+(defn not-empty-cell? [board]
+  (not (some zero? (flatten board))))
+
+(defn no-same-adjacent [coll]
+  (= coll (dedupe coll)))
+
+(defn game-over? [board]
+  (and (every? no-same-adjacent board)
+       (every? no-same-adjacent (transpose board))
+       (not-empty-cell? board)))

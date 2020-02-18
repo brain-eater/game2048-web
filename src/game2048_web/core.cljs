@@ -8,7 +8,9 @@
 ;; -------------------------
 ;; Views
 
-(defonce board-state (r/atom (game/init-board 4)))
+(def initial-state (game/init-board 4))
+
+(defonce board-state (r/atom initial-state))
 
 (defn get-cell-representation [cell]
   (str (if (= 0 cell) "" cell)))
@@ -20,6 +22,17 @@
   [:div {:class "row"}
    (map create-cell row)])
 
+(defn reset-game []
+  (reset! board-state initial-state))
+
+
+(defn game-over-view [board]
+  (if (game/game-over? board)
+    [:div {:class "game-over"}
+     [:div "Game over"]
+     [:button {:class "play-again" :on-click reset-game} "Play again"]]
+    [:div]))
+
 (defn game []
   [:div [:h2 "Let's play 2048"]
    [:div {:class "container"}
@@ -30,7 +43,8 @@
                      37 (swap! board-state (partial game/handle-move "a"))
                      39 (swap! board-state (partial game/handle-move "d"))
                      nil)}
-     (map create-row (debug @board-state))]]])
+     (map create-row (debug @board-state))]
+    (game-over-view @board-state)]])
 
 ;; -------------------------
 ;; Initialize app
